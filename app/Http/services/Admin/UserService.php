@@ -11,7 +11,7 @@ class UserService
 {
     public function allUsers(): Collection
     {
-        return User::notSuperAdmins()->get();
+        return User::with('roles')->notSuperAdmins()->latest()->get();
     }
 
     public function createUser(array $data): User
@@ -39,6 +39,7 @@ class UserService
 
     public function updateUser(int $id, array $data)
     {
+        $role = null;
         if (Arr::exists($data, 'role')) {
             $role = Role::where('id', $data['role'])->first();
 
@@ -47,12 +48,20 @@ class UserService
             }
         }
 
+        if (Arr::exists($data, 'email')) {
+            $data['email_verified_at'] = null;
+        }
+
         $user = $this->getUserById($id);
         $user->update($data);
 
         if ($role) {
             $user->roles()->detach();
             $user->assignRole($role);
+        }
+
+        if (Arr::exists($data, 'email')) {
+            $user->sendEmailVerificationNotification();
         }
 
         return $user;
