@@ -2,85 +2,63 @@
 
 namespace App\Http\Controllers\Admin\Users;
 
-use App\Http\Controllers\Controller;
-use App\Models\Role;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\Users\UserResource;
+use App\Http\Requests\Admin\Users\CreateUserRequest;
+use App\Http\Requests\Admin\Users\UpdateUserRequest;
+use Symfony\Component\HttpFoundation\Response;
 
+use App\Http\Services\Admin\UserService;
 
-// TODO: Separate Service
-// TODO: Response using resource
 class UserController extends Controller
 {
-    public function __construct()
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
     {
         $this->middleware(['role:super_admin|admin']);
+        $this->userService = $userService;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(): Collection
+    public function index()
     {
-        return User::notSuperAdmins()->get();
+        $users = $this->userService->allUsers();
+
+        return UserResource::collection($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request): User
+    public function store(CreateUserRequest $request)
     {
-        // TODO: Validate (Send new email verification, confirm password)
-        $role = Role::findOrFail($request->role);
+        // TODO: Validate (Send new email verification)
+        $user = $this->userService->createUser($request->only([
+            'name', 'email', 'role'
+        ]));
 
-        $user = User::create($request->only(['name', 'email', 'password']));
-        $user->assignRole($role);
-
-        return $user;
+        return (new UserResource($user))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user): User
+    public function show($id)
     {
-        return $user;
+        $user = $this->userService->getUserById($id);
+
+        return new UserResource($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $user): User
+    public function update(UpdateUserRequest $request, int $id)
     {
-        // TODO: Validate (Send new email verification, confirm password)
-        // TODO: Validate other fields empty use existing
-        $user->update($request->only(['name', 'email', 'password']));
+        // TODO: Validate (Send new email verification)
+        $user = $this->userService->updateUser($id, $request->only([
+            'name', 'email', 'role'
+        ]));
 
-        return $user;
+        return (new UserResource($user))->response()->setStatusCode(Response::HTTP_ACCEPTED);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $user)
+    public function destroy(int $id)
     {
-        // TODO: Implement Soft Delete
-        return $user->delete();
+        $this->userService->deleteUser($id);
+
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }
