@@ -86,7 +86,7 @@ class RolePermissionBootstrap extends Command
             $passwordConfirmation = $this->secret('Confirm your password');
         }
 
-        $user = User::create([
+        User::insert([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
@@ -96,6 +96,7 @@ class RolePermissionBootstrap extends Command
         ]);
 
         $superAdmin = Role::where('name', 'super_admin')->first();
+        $user = User::where('email', $email)->first();
         $user->assignRole($superAdmin);
 
         $this->info('Superuser created !');

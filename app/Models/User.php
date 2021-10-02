@@ -8,8 +8,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
-class User extends Authenticatable
+use function GuzzleHttp\Promise\queue;
+
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
@@ -42,4 +45,27 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The relationships that should always be Eager Loaded
+     *
+     * @var string[]
+     */
+    // protected $with = ['roles'];
+
+    // SCOPES
+
+    public function scopeNotSuperAdmins($query)
+    {
+        return $query->whereHas('roles', function ($query) {
+            $query->where('name', '!=', 'super_admin');
+        });
+    }
+
+    // MUTATOR
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
 }

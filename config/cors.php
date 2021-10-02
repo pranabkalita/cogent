@@ -15,7 +15,18 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    // SFORTIFY: Add the Fortify Routes
+    'paths' => [
+        'api/*',
+        'sanctum/csrf-cookie',
+        'login',
+        'logout',
+        'register',
+        'user/profile-information',
+        'email/verification-notification',
+        'forgot-password',
+        'reset-password'
+    ],
 
     'allowed_methods' => ['*'],
 

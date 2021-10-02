@@ -23,6 +23,12 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+
+                // SFORTIFY: If request coming from API change the response
+                if ($request->expectsJson()) {
+                    return response()->json(['error' => 'Already Authenticated !'], 200);
+                }
+
                 return redirect(RouteServiceProvider::HOME);
             }
         }
