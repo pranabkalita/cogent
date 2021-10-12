@@ -24,8 +24,8 @@ Route::get('/', function () {
 Route::prefix('/admin')->group(function () {
     Route::get('/', [AuthController::class, 'index'])->name('login');
     Route::post('/', [AuthController::class, 'store'])->name('login');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::name('admin.')->middleware(['auth:sanctum', 'verified'])->group(function () {
-        Route::resource('dashboard', DashboardController::class)->only('index');
     });
 });

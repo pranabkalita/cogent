@@ -1,4 +1,9 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/charts-bars.js": "/js/charts-bars.js",
+    "/js/charts-lines.js": "/js/charts-lines.js",
+    "/js/charts-pie.js": "/js/charts-pie.js",
+    "/js/focus-trap.js": "/js/focus-trap.js",
+    "/js/init-alpine.js": "/js/init-alpine.js",
     "/css/app.css": "/css/app.css"
 }

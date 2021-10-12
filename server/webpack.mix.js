@@ -12,6 +12,11 @@ const mix = require("laravel-mix");
  */
 
 mix.js("resources/js/app.js", "public/js")
+    .js("resources/js/charts-bars.js", "public/js")
+    .js("resources/js/charts-lines.js", "public/js")
+    .js("resources/js/charts-pie.js", "public/js")
+    .js("resources/js/focus-trap.js", "public/js")
+    .js("resources/js/init-alpine.js", "public/js")
     .vue()
     .postCss("resources/css/app.css", "public/css", [
         require("postcss-import"),
