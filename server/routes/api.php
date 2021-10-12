@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::prefix('admin')->name('api.admin.')->middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
 });

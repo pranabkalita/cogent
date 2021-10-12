@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+
+
+Route::prefix('/admin')->group(function () {
+    Route::get('/', [AuthController::class, 'index'])->name('login');
+    Route::post('/', [AuthController::class, 'store'])->name('login');
+
+    Route::name('admin.')->middleware(['auth:sanctum', 'verified'])->group(function () {
+        Route::resource('dashboard', DashboardController::class)->only('index');
+    });
 });
