@@ -7,6 +7,8 @@ use App\Http\Services\Admin\Auth\AuthService;
 use Illuminate\Http\Request;
 use Laravel\Fortify\Http\Requests\LoginRequest;
 
+use Inertia\Inertia;
+
 class AuthController extends Controller
 {
     protected $authService;
@@ -18,7 +20,7 @@ class AuthController extends Controller
 
     public function index()
     {
-        return ['login'];
+        return Inertia::render('Admin/Auth/Index');
     }
 
     public function store(LoginRequest $request)
